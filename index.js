@@ -47,8 +47,8 @@ async function postToWebhook(data, type, webhookUrl) {
       url: item.episode?.url || item.url || 'https://simkl.com',
       image: {
         url: item.poster
-          ? `https://simkl.in/posters/${item.poster}_g.jpg`
-          : ''
+        ? `https://simkl.in/posters/${item.poster}_m.jpg`
+        : ''
       },
       footer: { text: `Category: ${type.toUpperCase()}` },
       fields: [
