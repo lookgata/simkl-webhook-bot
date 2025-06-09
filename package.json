@@ -1,0 +1,13 @@
+{
+  "name": "simkl-webhook-bot",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js"
+  },
+  "dependencies": {
+    "dotenv": "^16.0.3",
+    "node-cron": "^3.0.2",
+    "node-fetch": "^2.6.7"
+  }
+}
