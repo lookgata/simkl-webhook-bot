@@ -2,6 +2,8 @@
 
 A lightweight Node.js bot that fetches upcoming TV, Anime, and Movie data from Simkl and sends updates to Discord via Webhooks.
 
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/new/template/5tSPVs?referralCode=your_code)
+
 ## Setup
 
 1. Clone this repo
