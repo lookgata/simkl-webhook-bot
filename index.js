@@ -35,13 +35,7 @@ async function shouldFetch(url, type) {
 }
 
 async function postToWebhook(data, type, webhookUrl) {
-  const today = = new Date(item.date);
-
-  for (const item of data) {
-    const airDate = item.date?.split('T')[0];
-    if (!airDate || airDate < today) continue;
-
-
+  const today = new Date(item.date);
   const options = {
     year: 'numeric',
     month: '2-digit',
