@@ -35,12 +35,33 @@ async function shouldFetch(url, type) {
 }
 
 async function postToWebhook(data, type, webhookUrl) {
-  const today = new Date().toISOString().split('T')[0];
+  const today = = new Date(item.date);
 
   for (const item of data) {
     const airDate = item.date?.split('T')[0];
     if (!airDate || airDate < today) continue;
 
+
+  const options = {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false,
+    timeZone: 'Asia/Bangkok'
+  };
+
+const airDate = today.toLocaleString('en-GB', options).replace(',', '');
+
+const embed = {
+  // ...
+  fields: [
+    { name: 'Air Date (ICT)', value: airDate, inline: true }
+  ]
+};
+
+    
     const embed = {
       title: item.title || 'Upcoming',
       description: `Season ${item.episode?.season ?? '-'} Episode ${item.episode?.episode ?? '-'}`,
