@@ -47,41 +47,58 @@ async function shouldFetch(url, type) {
 }
 
 async function postToWebhook(data, type, webhookUrl) {
-  const todayDate = new Date().toISOString().split('T')[0];
+  const now = new Date();
+
+  // กำหนดช่วงเวลาที่ต้องการ (5:30 วันนี้ - 5:30 วันพรุ่งนี้)
+  const start = new Date(now);
+  start.setHours(5, 30, 0, 0);  // วันนี้ 05:30
+
+  if (now < start) {
+    // ถ้าตอนนี้ก่อน 5:30 ให้ใช้ start เป็น 5:30 ของวันก่อนหน้า
+    start.setDate(start.getDate() - 1);
+  }
+
+  const end = new Date(start);
+  end.setDate(end.getDate() + 1); // 5:30 ของวันถัดไป
 
   for (const item of data) {
-    const date = item.date?.split('T')[0];
-    if (date !== todayDate) continue;
+    // แปลง item.date (UTC) -> Date object
+    const itemDateUTC = new Date(item.date);
 
-    const airTime = new Date(item.date).toLocaleString('th-TH', {
-      timeZone: 'Asia/Bangkok',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
+    // แปลงเป็นเวลาประเทศไทย (+7 ชม.)
+    const itemDateTH = new Date(itemDateUTC.getTime() + 7 * 60 * 60 * 1000);
 
-    const embed = {
-      title: item.title || 'Upcoming',
-      description: `Season ${item.episode?.season ?? '-'} Episode ${item.episode?.episode ?? '-'}`,
-      url: item.episode?.url || item.url || 'https://simkl.com',
-      image: {
-        url: item.poster
-          ? `https://simkl.in/posters/${item.poster}_m.jpg`
-          : ''
-      },
-      footer: { text: `Category: ${type.toUpperCase()}` },
-      fields: [{ name: 'Air Date', value: airTime, inline: true }]
-    };
+    // เช็คว่าอยู่ในช่วง 5:30 วันนี้ ถึง 5:30 วันถัดไปหรือไม่
+    if (itemDateTH >= start && itemDateTH < end) {
+      const airTime = itemDateTH.toLocaleString('th-TH', {
+        year: 'numeric',
+        month: '2-digit',
+        day: '2-digit',
+        hour: '2-digit',
+        minute: '2-digit'
+      });
 
-    await fetch(webhookUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ embeds: [embed] })
-    });
+      const embed = {
+        title: item.title || 'Upcoming',
+        description: `Season ${item.episode?.season ?? '-'} Episode ${item.episode?.episode ?? '-'}`,
+        url: item.episode?.url || item.url || 'https://simkl.com',
+        image: {
+          url: item.poster
+            ? `https://simkl.in/posters/${item.poster}_m.jpg`
+            : ''
+        },
+        footer: { text: `Category: ${type.toUpperCase()}` },
+        fields: [{ name: 'Air Date', value: airTime, inline: true }]
+      };
 
-    console.log(`[✅] Sent: ${embed.title}`);
+      await fetch(webhookUrl, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ embeds: [embed] })
+      });
+
+      console.log(`[✅] Sent: ${embed.title}`);
+    }
   }
 }
 
