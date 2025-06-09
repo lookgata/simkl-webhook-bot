@@ -2,10 +2,17 @@ require('dotenv').config();
 const fetch = require('node-fetch');
 const cron = require('node-cron');
 const express = require('express');
-
 const app = express();
-app.get('/', (_, res) => res.send('✅ Bot is awake'));
-app.listen(process.env.PORT || 3000);
+
+app.get('/', (req, res) => {
+  res.send('✅ Simkl Webhook Bot is running');
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`🚀 Server is listening on port ${PORT}`);
+});
+
 
 const urls = {
   tv: {
