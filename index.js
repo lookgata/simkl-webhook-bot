@@ -46,16 +46,8 @@ async function postToWebhook(data, type, webhookUrl) {
     timeZone: 'Asia/Bangkok'
   };
 
-const airDate = today.toLocaleString('en-GB', options).replace(',', '');
-
-const embed = {
-  // ...
-  fields: [
-    { name: 'Air Date (ICT)', value: airDate, inline: true }
-  ]
-};
-
-    
+  const airDate = today.toLocaleString('en-GB', options).replace(',', '');
+   
     const embed = {
       title: item.title || 'Upcoming',
       description: `Season ${item.episode?.season ?? '-'} Episode ${item.episode?.episode ?? '-'}`,
