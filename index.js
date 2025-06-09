@@ -49,26 +49,3 @@ async function postToWebhook(data, type, webhookUrl) {
   }
 }
 
-async function runAll() {
-  for (const [type, info] of Object.entries(urls)) {
-    if (await shouldFetch(info.url, type)) {
-      const res = await fetch(info.url);
-      const json = await res.json();
-      await postToWebhook(json, type, info.webhook);
-    } else {
-      console.log(`No update for ${type}.`);
-    }
-  }
-}
-
-const schedules = ['15 4 * * *', '15 10 * * *', '15 16 * * *']; // 11:15, 17:15, 23:15 TH
-
-schedules.forEach(schedule => {
-  cron.schedule(schedule, () => {
-    console.log(`Running job at ${schedule}`);
-    runAll();
-  });
-});
-
-// run once on start (optional)
-runAll();
