@@ -96,8 +96,8 @@ async function runAll() {
     }
   }
 }
-
-const schedules = ['15 4 * * *', '15 10 * * *', '15 16 * * *']; // 11:15, 17:15, 23:15 TH
+const schedules = ['0 0 * * *']; // รันเวลา 07:00 Thailand time (Asia/Bangkok)
+//const schedules = ['15 4 * * *', '15 10 * * *', '15 16 * * *']; // 11:15, 17:15, 23:15 TH
 
 schedules.forEach(schedule => {
   cron.schedule(schedule, () => {
