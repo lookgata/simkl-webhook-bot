@@ -35,7 +35,6 @@ async function shouldFetch(url, type) {
 }
 
 async function postToWebhook(data, type, webhookUrl) {
-  const today = new Date(item.date);
   const options = {
     year: 'numeric',
     month: '2-digit',
@@ -46,20 +45,22 @@ async function postToWebhook(data, type, webhookUrl) {
     timeZone: 'Asia/Bangkok'
   };
 
-  const airDate = today.toLocaleString('en-GB', options).replace(',', '');
-   
+  for (const item of data) {
+    if (!item.date) continue; // ถ้าไม่มีวันที่ข้ามเลย
+
+    const dateObj = new Date(item.date);
+    const airDate = dateObj.toLocaleString('en-GB', options).replace(',', '');
+
     const embed = {
       title: item.title || 'Upcoming',
       description: `Season ${item.episode?.season ?? '-'} Episode ${item.episode?.episode ?? '-'}`,
       url: item.episode?.url || item.url || 'https://simkl.com',
       image: {
-        url: item.poster
-        ? `https://simkl.in/posters/${item.poster}_m.jpg`
-        : ''
+        url: item.poster ? `https://simkl.in/posters/${item.poster}_m.jpg` : ''
       },
       footer: { text: `Category: ${type.toUpperCase()}` },
       fields: [
-        { name: 'Air Date', value: airDate, inline: true }
+        { name: 'Air Date (ICT)', value: airDate, inline: true }
       ]
     };
 
