@@ -71,4 +71,4 @@ schedules.forEach(schedule => {
 });
 
 // run once on start (optional)
-// runAll();
+runAll();
