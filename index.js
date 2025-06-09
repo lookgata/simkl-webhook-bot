@@ -97,8 +97,8 @@ async function runAll() {
   }
 }
 
-cron.schedule('0 7 * * *', () => {
-  console.log('[🕖] 07:00 Asia/Bangkok triggered');
+cron.schedule('30 5 * * *', () => {
+  console.log('[🕠] 05:30 Asia/Bangkok triggered');
   runAll();
 }, {
   timezone: 'Asia/Bangkok'
