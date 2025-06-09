@@ -45,11 +45,22 @@ async function postToWebhook(data, type, webhookUrl) {
     timeZone: 'Asia/Bangkok'
   };
 
-  for (const item of data) {
-    if (!item.date) continue; // ถ้าไม่มีวันที่ข้ามเลย
+  // หาวันนี้ใน timezone Asia/Bangkok (รูปแบบ yyyy-mm-dd)
+  const now = new Date();
+  const nowThaiStr = now.toLocaleDateString('en-CA', { timeZone: 'Asia/Bangkok' }); // 'YYYY-MM-DD'
 
-    const dateObj = new Date(item.date);
-    const airDate = dateObj.toLocaleString('en-GB', options).replace(',', '');
+  for (const item of data) {
+    if (!item.date) continue;
+
+    // แปลงวันที่ของ item เป็นวันที่ไทย (yyyy-mm-dd)
+    const itemDate = new Date(item.date);
+    const itemDateStr = itemDate.toLocaleDateString('en-CA', { timeZone: 'Asia/Bangkok' });
+
+    // ถ้าวันที่ตรงกับวันนี้เท่านั้น
+    if (itemDateStr !== nowThaiStr) continue;
+
+    // แปลงเวลาแสดงละเอียด
+    const airDate = itemDate.toLocaleString('en-GB', options).replace(',', '');
 
     const embed = {
       title: item.title || 'Upcoming',
