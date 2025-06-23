@@ -49,26 +49,17 @@ async function shouldFetch(url, type) {
 async function postToWebhook(data, type, webhookUrl) {
   const now = new Date();
 
-  // กำหนดช่วงเวลาที่ต้องการ (5:30 วันนี้ - 5:30 วันพรุ่งนี้)
   const start = new Date(now);
-  start.setHours(5, 30, 0, 0);  // วันนี้ 05:30
-
-  if (now < start) {
-    // ถ้าตอนนี้ก่อน 5:30 ให้ใช้ start เป็น 5:30 ของวันก่อนหน้า
-    start.setDate(start.getDate() - 1);
-  }
+  start.setHours(5, 30, 0, 0);
+  if (now < start) start.setDate(start.getDate() - 1);
 
   const end = new Date(start);
-  end.setDate(end.getDate() + 1); // 5:30 ของวันถัดไป
+  end.setDate(end.getDate() + 1);
 
   for (const item of data) {
-    // แปลง item.date (UTC) -> Date object
-    const itemDateUTC = new Date(item.date);
+    const itemDate = new Date(item.date);
+    const itemDateTH = new Date(itemDate.getTime() + 7 * 60 * 60 * 1000);
 
-    // แปลงเป็นเวลาประเทศไทย (+7 ชม.)
-    const itemDateTH = new Date(itemDateUTC.getTime() + 7 * 60 * 60 * 1000);
-
-    // เช็คว่าอยู่ในช่วง 5:30 วันนี้ ถึง 5:30 วันถัดไปหรือไม่
     if (itemDateTH >= start && itemDateTH < end) {
       const airTime = itemDateTH.toLocaleString('th-TH', {
         year: 'numeric',
@@ -78,17 +69,34 @@ async function postToWebhook(data, type, webhookUrl) {
         minute: '2-digit'
       });
 
+      let description = '';
+      if (type === 'tv' || type === 'anime') {
+        const season = item.episode?.season ?? '-';
+        const episode = item.episode?.episode ?? '-';
+        description = `Season ${season} Episode ${episode}`;
+      } else if (type === 'movie') {
+        description = `🎬 Movie Release`;
+      }
+
       const embed = {
-        title: item.title || 'Upcoming',
-        description: `Season ${item.episode?.season ?? '-'} Episode ${item.episode?.episode ?? '-'}`,
+        title: item.title || 'Untitled',
+        description,
         url: item.episode?.url || item.url || 'https://simkl.com',
         image: {
           url: item.poster
             ? `https://simkl.in/posters/${item.poster}_m.jpg`
             : ''
         },
-        footer: { text: `Category: ${type.toUpperCase()}` },
-        fields: [{ name: 'Air Date', value: airTime, inline: true }]
+        footer: {
+          text: `Category: ${type.toUpperCase()}`
+        },
+        fields: [
+          {
+            name: 'Air Date',
+            value: airTime,
+            inline: true
+          }
+        ]
       };
 
       await fetch(webhookUrl, {
@@ -97,7 +105,7 @@ async function postToWebhook(data, type, webhookUrl) {
         body: JSON.stringify({ embeds: [embed] })
       });
 
-      console.log(`[✅] Sent: ${embed.title}`);
+      console.log(`[✅] Sent: ${embed.title} (${type})`);
     }
   }
 }
